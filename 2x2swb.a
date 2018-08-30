@@ -107,6 +107,22 @@ package body switch_element is
 
         accept CellDeparture(CellReady : in out integer; Port : integer; Cell : in ATMCell) do
 
+          BufferOut(Port).RemoveFromBuffer(BufferEmpty.CellOut);
+          Cell:= CellOut;
+
+          if BufferEmpty=0 then
+            CellReady :=0;
+          else
+            my_io.fileInOut.put_line(fd);
+            my_io.fileInOut.put_str (fd,"        Cell leaves switch     ");
+            my_io.fileInOut.put_int (fd, CellOut.Port, 2);
+            my_io.fileInOut.put_str (fd,"           ");
+            my_io.fileInOut.put_int (fd, CellOut.CellHeader, 2);
+            my_io.fileInOut.put_str (fd,"                                          ");
+            BufferOut(CellOut.Port).CountCells(NoOfCellsInBuffer);
+            my_io.fileInOut.put_int (fd, NoOfCellsInBuffer, 2);
+          end if;
+
         end CellDeparture;
 
       end select;
