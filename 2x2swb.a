@@ -1,0 +1,47 @@
+with ATMTypes:       use ATMTypes;
+with my_io;
+with output_buffer:  use output_buffer;
+with sim_bits:       use sim_bits;
+
+
+package body switch_element is
+
+   type RouteStruct is
+   record
+      OutPort      : PortType :=0;
+      HeaderRecord : ATMHeader;
+   end record;
+
+------------------------------------------------------------------------------
+
+  task body ATMElement is
+    --                       InPort ,     InCellHeader
+    RouteTable    : array (1..NoOfPorts , 1..NoRoutes) of RouteStruct;
+    CellIn,CellOut: ATMCell := (0,0,0);
+    BufferOut     : array (1..NoOfPorts) of ATMBuffer;
+
+    BufferEmpty, NoOfCellsInBuffer, NodeNumber,x,y: integer := 0;
+
+------------------------------------------------------------------------------
+
+  function route(CellToRoute : in ATMCell) return ATMCell is
+    NewCell : ATMCell;
+  begin
+    NewCell.Port       := RouteTable(CellToRoute.Port, CellToRoute.CellHeader).OutPort;
+    NewCell.CellHeader := RouteTable(CellToRoute.Port, CellToRoute.CellHeader).HeaderOut;
+    NewCell.CellBody   := CellToRoute.CellBody;
+    return NewCell;
+  end route;
+
+  ------------------------------------------------------------------------------
+  begin
+    for x in 1..NoRoute loop
+      RouteTable(1,x).OutPort   :=2;
+      RouteTable(2,x).OutPort   :=1;
+      RouteTable(1,x).HeaderOut :=random(NoRoutes)+1;
+      RouteTable(2,x).HeaderOut :=random(NoRoutes)+1;
+    end loop;
+  ------------------------------------------------------------------------------
+
+
+end switch_element;
