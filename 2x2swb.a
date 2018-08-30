@@ -41,6 +41,27 @@ package body switch_element is
       RouteTable(1,x).HeaderOut :=random(NoRoutes)+1;
       RouteTable(2,x).HeaderOut :=random(NoRoutes)+1;
     end loop;
+
+    accept initialise(x : in integer) do
+      NodeNumber :=x;
+      my_io.fileInOut.put_line(fd);
+      my_io.fileInOut.put_str (fd,"Routing Transformation Table for Switch ");
+      my_io.fileInOut.put_int (fd,NodeNumber,3);
+      my_io.fileInOut.put_line(fd);
+      my_io.fileInOut.put_str (fd,"  Cell In                  Cell Out ");
+      my_io.fileInOut.put_line(fd);
+      my_io.fileInOut.put_str (fd,"Port   Header            Port   Header");
+      my_io.fileInOut.put_line(fd);
+      for x in 1..NoOfPorts loop
+        for y in 1..NoRoutes loop
+          my_io.fileInOut.put_str (fd," ");
+          my_io.fileInOut.put_int (fd,x,2);
+          my_io.fileInOut.put_str (fd,"     ");
+          my_io.fileInOut.put_int (fd,y,2);
+          my_io.fileInOut.put_str (fd,"       -        ");
+          my_io.fileInOut.put_int (fd,RouteTable(x,y).OutPort,2);
+
+
   ------------------------------------------------------------------------------
 
 
