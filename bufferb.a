@@ -1,1 +1,12 @@
 with ATMTypes:       use ATMTypes;
+with my_io;
+
+package body Output_Buffer is
+
+task body ATMBuffer is
+
+  Buffer      : array(1..MaxBufferSize) of ATMCell;
+  BufferFirst : INTEGER := 1; -- Next Empty slot for adding into buffer
+  BufferLast  : INTEGER := 1; -- First cell to send from buffer
+
+end Output_Buffer;
