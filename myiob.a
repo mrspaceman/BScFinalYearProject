@@ -1,1 +1,86 @@
-with ATMTypes:       use ATMTypes;
+with text_io;
+package int_io is new text_io.integer_io (integer);
+with int_io;
+with text_io;
+with tty;
+with cursor;
+
+package body my_io is
+
+  -- These two variables are used to reset the cursor position
+  -- after displaying the line
+  oldx : row_range := 0;
+  oldy : column_range :=0;
+  dummy: character := ' ';
+
+------------------------------------------------------------------------------
+
+Task body Display is
+use text_io;
+begin
+  -- This procedure handles all the messages to the screen;
+  loop
+	select
+	
+		accept CLS do
+		-- Clears the screen
+			tty.clear_screen;
+			oldx := 0;
+			oldy := 0;
+		end CLS;
+	or -- select
+	
+	end select;
+
+
+  exception
+    when tasking_error      => cursor.move(24,1,0);text_io.put("Tasking Error in Display    ",   24, 1);
+    when program_error      => cursor.move(24,1,0);text_io.put("Program Error in Display    ",   24, 1);
+    when storage_error      => cursor.move(24,1,0);text_io.put("Storage Error in Display    ",   24, 1);
+    when numeric_error      => cursor.move(24,1,0);text_io.put("Numeric Error in Display    ",   24, 1);
+    when constraint_error   => cursor.move(24,1,0);text_io.put("Constraint Error in Display ",   24, 1);
+    when others             => cursor.move(24,1,0);text_io.put("Other Error in Display      ",   24, 1);
+
+end Display;
+
+------------------------------------------------------------------------------
+
+Task body Input is
+use text_io;
+temp : natural;
+begin
+  -- This procedure handles all the messages to the screen;
+
+
+  exception
+    when tasking_error      => cursor.move(24,1,0);text_io.put("Tasking Error in Input    ",   24, 1);
+    when program_error      => cursor.move(24,1,0);text_io.put("Program Error in Input    ",   24, 1);
+    when storage_error      => cursor.move(24,1,0);text_io.put("Storage Error in Input    ",   24, 1);
+    when numeric_error      => cursor.move(24,1,0);text_io.put("Numeric Error in Input    ",   24, 1);
+    when constraint_error   => cursor.move(24,1,0);text_io.put("Constraint Error in Input ",   24, 1);
+    when others             => cursor.move(24,1,0);text_io.put("Other Error in Input      ",   24, 1);
+
+end Input;
+
+------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------
+
+Task body FileInOut is
+begin
+  loop
+  end loop;
+
+
+  exception
+    when tasking_error      => cursor.move(24,1,0);text_io.put("Tasking Error in FileInOut    ",   24, 1);
+    when program_error      => cursor.move(24,1,0);text_io.put("Program Error in FileInOut    ",   24, 1);
+    when storage_error      => cursor.move(24,1,0);text_io.put("Storage Error in FileInOut    ",   24, 1);
+    when numeric_error      => cursor.move(24,1,0);text_io.put("Numeric Error in FileInOut    ",   24, 1);
+    when constraint_error   => cursor.move(24,1,0);text_io.put("Constraint Error in FileInOut ",   24, 1);
+    when others             => cursor.move(24,1,0);text_io.put("Other Error in FileInOut      ",   24, 1);
+
+end FileInOut;
+
+------------------------------------------------------------------------------
