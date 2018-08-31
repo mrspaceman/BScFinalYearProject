@@ -28,10 +28,40 @@ begin
 			oldx := 0;
 			oldy := 0;
 		end CLS;
+        
 	or -- select
+    
+        accept DisplayString((s : in string; x: in row_range; y : in column_range) do
+        
+        end DisplayString;
+        
+	or -- select
+    
+        accept DisplayChar(c : in character; x: in row_range; y : in column_range) do
+        
+        end DisplayChar;
+        
+	or -- select
+    
+        accept DisplayInt(i,len : in integer; x: in row_range; y : in column_range) do
+        
+        end DisplayInt;
+        
+	or -- select
+    
+        accept DisplayTime(h,m,s : in integer; x: in row_range; y : in column_range) do
+        
+        end DisplayTime;
+        
+	or -- select
+    
+        accept Pause(s : in string; x: in row_range; y : in column_range) do
+        
+        end Pause;        
 	
 	end select;
 
+  end loop;
 
   exception
     when tasking_error      => cursor.move(24,1,0);text_io.put("Tasking Error in Display    ",   24, 1);
@@ -51,6 +81,24 @@ temp : natural;
 begin
   -- This procedure handles all the messages to the screen;
 
+  loop
+	select
+	
+		accept InputString(s : out string;  x: in row_range; y : in column_range) do
+        end InputString;
+        
+	or -- select
+    
+        accept InputChar(c : in character;x: in row_range; y : in column_range) do
+        end InputChar;
+    
+	or -- select
+    
+        accept InputInt(i : in integer;  x: in row_range; y : in column_range) do
+        end InputInt;
+        
+    end select;
+  end loop;
 
   exception
     when tasking_error      => cursor.move(24,1,0);text_io.put("Tasking Error in Input    ",   24, 1);
@@ -70,8 +118,33 @@ end Input;
 Task body FileInOut is
 begin
   loop
+	select
+	
+		accept Create(file : in out text_io.file_type; s : in string) do 
+        end Create;
+        
+	or -- select
+    
+        accept Put_Str (file : in text_io.file_type; s : in string) do 
+        end Put_Str;
+    
+	or -- select
+    
+        accept Put_Int (file : in text_io.file_type; i : in integer) do 
+        end Put_Int;
+    
+	or -- select
+    
+        accept Put_Line(file : in text_io.file_type) do 
+        end Put_Line;
+    
+	or -- select
+    
+        accept Close(file : in out text_io.file_type) do 
+        end Close;
+        
+    end select;
   end loop;
-
 
   exception
     when tasking_error      => cursor.move(24,1,0);text_io.put("Tasking Error in FileInOut    ",   24, 1);
