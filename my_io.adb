@@ -1,7 +1,6 @@
-with text_io;
-package int_io is new text_io.integer_io (integer);
+with Ada.Text_IO;    use Ada.Text_IO;
+package int_io is new Ada.Text_IO.integer_io (integer);
 with int_io;
-with text_io;
 with tty;
 with cursor;
 

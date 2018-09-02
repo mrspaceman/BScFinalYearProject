@@ -1,7 +1,7 @@
-with ATMTypes:       use ATMTypes;
+with ATMTypes;       use ATMTypes;
 with my_io;
-with output_buffer:  use output_buffer;
-with sim_bits:       use sim_bits;
+with output_buffer;  use output_buffer;
+with sim_bits;       use sim_bits;
 
 
 package body switch_element is
