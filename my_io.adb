@@ -1,9 +1,8 @@
-with text_io;
-package int_io is new text_io.integer_io (integer);
-with int_io;
-with text_io;
-with tty;
-with cursor;
+with Ada.Text_IO;    use Ada.Text_IO;
+--package Ada.Integer_Text_IO is new Ada.Text_IO.Integer_IO (Integer);
+with Ada.Integer_Text_IO;
+--with Ada.tty;
+--with Ada.cursor;
 
 package body my_io is
 
@@ -16,7 +15,7 @@ package body my_io is
    ------------------------------------------------------------------------------
 
    Task body Display is
-      use text_io;
+      use Ada.Text_IO;
    begin
       -- This procedure handles all the messages to the screen;
       loop

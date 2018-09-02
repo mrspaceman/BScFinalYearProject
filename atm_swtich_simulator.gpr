@@ -2,7 +2,8 @@ project ATM_Swtich_Simulator is
 
    for Source_Dirs use ("./**");
    for Object_Dir use "../atm_switch_build";
-   for Main use ("sim1.adb");
+   for Main use ("simulate.adb");
+   for Source_Files use ("atmtypes.ads", "buffer.adb", "buffer.ads", "my_io.adb", "my_io.ads", "simulate.adb", "sim_bits.adb", "sim_bits.ads", "simulate.adb", "switch_element.adb", "switch_element.ads");
 
    package Ide is
       for Vcs_Kind use "Git";
@@ -12,7 +13,16 @@ project ATM_Swtich_Simulator is
       for Default_Switches ("ada") use ("-i4", "-c3", "-c4", "-A2", "-A3", "-A4", "-A5", "--separate-stmt-name", "--no-separate-is", "--use-on-new-line", "--no-separate-loop-then");
    end Pretty_Printer;
 
-   for Source_Files use ("atmtypes.adb", "buffer.adb", "buffer.ads", "myio.adb", "myio.ads", "sim1.adb", "sim2.adb", "sim2.ads");
+   package Builder is
+      for Default_Switches ("ada") use ("-s", "-g");
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-g", "-fstack-check", "-gnato");
+   end Compiler;
+
+   package Linker is
+      for Default_Switches ("ada") use ("-g");
+   end Linker;
 
 end ATM_Swtich_Simulator;
-

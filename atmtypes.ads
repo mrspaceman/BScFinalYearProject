@@ -1,5 +1,5 @@
-with text_io;
-with errors;
+with Ada.text_io;     use Ada.Text_IO;
+with Ada.Exceptions;  use Ada.Exceptions;
 
 -- This file contains all of the data types, variables and constants
 -- used by the ATM switch simulator system.
@@ -21,8 +21,8 @@ package ATMtypes is
 
   type LinkStruct is
     record
-      PortType : PortType;
-      Swithc   : Integer;
+      Port     : PortType;
+      Switch   : Integer;
     end record;
 
   type TransitCell is
@@ -44,6 +44,6 @@ package ATMtypes is
   NoRoutes          : constant INTEGER := 19;   -- number of entries in each switch's routing table
   NoOfPorts         : constant INTEGER :=  2;   -- number of input/output ports per switch
   NoOfLoops         : constant INTEGER :=  5;   -- number of times to run the simulation
-  fd                : text_io.file_type;
+  fd                : Ada.Text_IO.file_type;
 
 end ATMtypes;
