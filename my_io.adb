@@ -161,6 +161,9 @@ package body my_io is
 
                 accept Create (file : in out File_Type ; s : in string) do
                     Ada.Text_IO.create (file, Out_File, s);
+                    Create(File => file,
+          Mode => Out_File,
+          Name => s);
                 end Create;
 
             or
