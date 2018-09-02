@@ -1,4 +1,5 @@
 with Ada.Text_IO; use Ada.Text_IO;
+with sim_bits;
 
 package my_io is
 
@@ -7,15 +8,15 @@ package my_io is
 
     Task Display is
         entry CLS;
-        entry DisplayString (s       : in string;   x : in Positive_Count; y : in Positive_Count);
-        entry DisplayChar   (c       : in character;x : in Positive_Count; y : in Positive_Count);
-        entry DisplayInt    (i, len  : in integer;  x : in Positive_Count; y : in Positive_Count);
-        entry DisplayTime   (h, m, s : in integer;  x : in Positive_Count; y : in Positive_Count);
-        entry Pause         (s       : in string;   x : in Positive_Count; y : in Positive_Count);
+        entry DisplayString (s       : in string;   row : in Positive_Count; col : in Positive_Count);
+        entry DisplayChar   (c       : in character;row : in Positive_Count; col : in Positive_Count);
+        entry DisplayInt    (i, len  : in integer;  row : in Positive_Count; col : in Positive_Count);
+        entry DisplayTime   (h, m, s : in integer;  row : in Positive_Count; col : in Positive_Count);
+        entry Pause         (s       : in string;   row : in Positive_Count; col : in Positive_Count);
     end Display;
 
     Task Input is
-        entry InputString (s : out string;  x : in Positive_Count; y : in Positive_Count);
+        entry InputString (s : out string;  row : in Positive_Count; col : in Positive_Count);
     end Input;
 
     Task FileInOut is

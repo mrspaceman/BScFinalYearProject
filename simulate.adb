@@ -21,9 +21,9 @@ Procedure Simulate is
         my_io.display.cls;
         column := (40 - (Title'LENGTH / 2));
         my_io.display.displayString (Title, 1, column);  -- Centres Title on Screen
-        my_io.display.displayString (Author, 1, (79 - Author'LENGTH)); -- Right Justifies Author on screen
-        my_io.display.displayString ("Cycle Number", 5, 10);
-
+        column := (79 - Author'LENGTH);
+        my_io.display.displayString (Author, 2, column); -- Right Justifies Author on screen
+        my_io.display.displayString ("Cycle Number", 4, 10);
     End setup_screen;
 
     Procedure setup_file is

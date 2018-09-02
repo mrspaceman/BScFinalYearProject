@@ -1,13 +1,13 @@
 with Ada.Text_IO;          use Ada.Text_IO;
 with Ada.Integer_Text_IO;  use Ada.Integer_Text_IO;
-
+with sim_bits;             use sim_bits;
 
 package body my_io is
 
     -- These two variables are used to reset the cursor position
     -- after displaying the line
-    oldx  : Positive_Count := 1;
-    oldy  : Positive_Count := 1;
+    oldCol  : Positive_Count := 1;
+    oldRow  : Positive_Count := 1;
     dummy : character := ' ';
 
     ------------------------------------------------------------------------------
@@ -21,45 +21,46 @@ package body my_io is
                 accept CLS do
                     -- Clears the screen
                     Ada.Text_IO.Put (ASCII.ESC & "[2J");
-                    oldx := 1;
-                    oldy := 1;
+                    oldCol := 1;
+                    oldRow := 1;
                 end CLS;
 
             or -- select
 
-                accept DisplayString (s : in string; x : in Positive_Count; y : in Positive_Count) do
+                accept DisplayString (s : in string; row : in Positive_Count; col : in Positive_Count) do
                     -- Displays strings to the screen at the correct location.
-                    Ada.Text_IO.Set_Col (x);
-                    Ada.Text_IO.Set_Line (y);
+                    -- Trace (my_io_stream, "DisplayString (Str : col : "+x+", row : "+y +")");
+                    Ada.Text_IO.Set_Col (col);
+                    Ada.Text_IO.Set_Line (row);
                     Ada.Text_IO.Put_Line (s);
                 end DisplayString;
 
             or -- select
 
-                accept DisplayChar (c : in character; x : in Positive_Count; y : in Positive_Count) do
+                accept DisplayChar (c : in character; row : in Positive_Count; col : in Positive_Count) do
                     -- Displays characters to the screen at the correct location.
-                    Ada.Text_IO.Set_Col (x);
-                    Ada.Text_IO.Set_Line (y);
+                    Ada.Text_IO.Set_Col (col);
+                    Ada.Text_IO.Set_Line (row);
                     Ada.Text_IO.Put (c);
                 end DisplayChar;
 
             or -- select
 
-                accept DisplayInt (i, len : in integer; x : in Positive_Count; y : in Positive_Count) do
+                accept DisplayInt (i, len : in integer; row : in Positive_Count; col : in Positive_Count) do
                     -- Displays integers to the screen at the correct location.
-                    Ada.Text_IO.Set_Col (x);
-                    Ada.Text_IO.Set_Line (y);
+                    Ada.Text_IO.Set_Col (col);
+                    Ada.Text_IO.Set_Line (row);
                     Ada.Integer_Text_IO.Put (i);                          -- i is the number, len is the length - to avoid spurios spaces.
                 end DisplayInt;
 
             or -- select
 
-                accept DisplayTime (h, m, s : in integer; x : in Positive_Count; y : in Positive_Count) do
+                accept DisplayTime (h, m, s : in integer; row : in Positive_Count; col : in Positive_Count) do
                     -- Displays the time to the screen at the correct location.
-                    oldx := Ada.Text_IO.Col;
-                    oldy := Ada.Text_IO.Line;
-                    Ada.Text_IO.Set_Col (x);                  -- Moves the cursor to the correct position that the clock will be displayed.
-                    Ada.Text_IO.Set_Line (y);
+                    oldCol := Ada.Text_IO.Col;
+                    oldRow := Ada.Text_IO.Line;
+                    Ada.Text_IO.Set_Col (col);                  -- Moves the cursor to the correct position that the clock will be displayed.
+                    Ada.Text_IO.Set_Line (row);
 
 
                     if (h < 10) then                          -- if the hours are less than ten a zero is put in front of the digit
@@ -87,16 +88,16 @@ package body my_io is
                         Ada.Integer_Text_IO.Put (s);
                     end if;
 
-                    Ada.Text_IO.Set_Col (x);
-                    Ada.Text_IO.Set_Line (y);
+                    Ada.Text_IO.Set_Col (oldCol);
+                    Ada.Text_IO.Set_Line (oldRow);
 
                 end DisplayTime;
 
             or -- select
 
-                accept Pause (s : in string; x : in Positive_Count; y : in Positive_Count) do
-                    Ada.Text_IO.Set_Col (x);
-                    Ada.Text_IO.Set_Line (y);
+                accept Pause (s : in string; row : in Positive_Count; col : in Positive_Count) do
+                    Ada.Text_IO.Set_Col (col);
+                    Ada.Text_IO.Set_Line (row);
                     Ada.Text_IO.Put ( s);
                     Ada.Text_IO.Get (dummy);
                 end Pause;
@@ -109,12 +110,12 @@ package body my_io is
         end loop;
 
     exception
-        when tasking_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put("Tasking Error in Display");
-        when program_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Program Error in Display");
-        when storage_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Storage Error in Display");
-        when numeric_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Numeric Error in Display");
-    --    when constraint_error   => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Constraint Error in Display");
-        when others             => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Other Error in Display");
+        when tasking_error      => Ada.Text_IO.Set_Col (1);Ada.Text_IO.Set_Line (24); Ada.Text_IO.Put("Tasking Error in Display");
+        when program_error      => Ada.Text_IO.Set_Col (1);Ada.Text_IO.Set_Line (24); Ada.Text_IO.Put ("Program Error in Display");
+        when storage_error      => Ada.Text_IO.Set_Col (1);Ada.Text_IO.Set_Line (24); Ada.Text_IO.Put ("Storage Error in Display");
+        when numeric_error      => Ada.Text_IO.Set_Col (1);Ada.Text_IO.Set_Line (24); Ada.Text_IO.Put ("Numeric Error in Display");
+    --    when constraint_error   => Ada.Text_IO.Set_Col (1);Ada.Text_IO.Set_Line (24); Ada.Text_IO.Put ("Constraint Error in Display");
+        when others             => Ada.Text_IO.Set_Col (1);Ada.Text_IO.Set_Line (24); Ada.Text_IO.Put ("Other Error in Display");
 
     end Display;
 
@@ -127,11 +128,11 @@ package body my_io is
         loop
             select
 
-                accept InputString (s : out string;  x : in Positive_Count; y : in Positive_Count) do
+                accept InputString (s : out string;  row : in Positive_Count; col : in Positive_Count) do
                     -- Inputs strings from the keyboard at the correct screen location.
-                    Ada.Text_IO.Set_Col (x);
-                    Ada.Text_IO.Set_Line (y);
-                    Ada.Text_IO.get (s);
+                    Ada.Text_IO.Set_Col (col);
+                    Ada.Text_IO.Set_Line (row);
+                    s := Get_String;
                 end InputString;
 
             or
@@ -142,12 +143,12 @@ package body my_io is
         end loop;
 
     exception
-        when tasking_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Tasking Error in Input");
-        when program_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Program Error in Input");
-        when storage_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Storage Error in Input");
-        when numeric_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Numeric Error in Input");
-  --      when constraint_error   => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Constraint Error in Input ");
-        when others             => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Other Error in Input");
+        when tasking_error      => Ada.Text_IO.Set_Col (1);Ada.Text_IO.Set_Line (24); Ada.Text_IO.Put ("Tasking Error in Input");
+        when program_error      => Ada.Text_IO.Set_Col (1);Ada.Text_IO.Set_Line (24); Ada.Text_IO.Put ("Program Error in Input");
+        when storage_error      => Ada.Text_IO.Set_Col (1);Ada.Text_IO.Set_Line (24); Ada.Text_IO.Put ("Storage Error in Input");
+        when numeric_error      => Ada.Text_IO.Set_Col (1);Ada.Text_IO.Set_Line (24); Ada.Text_IO.Put ("Numeric Error in Input");
+  --      when constraint_error   => Ada.Text_IO.Set_Col (1);Ada.Text_IO.Set_Line (24); Ada.Text_IO.Put ("Constraint Error in Input ");
+        when others             => Ada.Text_IO.Set_Col (1);Ada.Text_IO.Set_Line (24); Ada.Text_IO.Put ("Other Error in Input");
 
     end Input;
 
