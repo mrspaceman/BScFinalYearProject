@@ -28,18 +28,18 @@ package body switch_element is
     NewCell : ATMCell;
   begin
     NewCell.Port       := RouteTable(CellToRoute.Port, CellToRoute.CellHeader).OutPort;
-    NewCell.CellHeader := RouteTable(CellToRoute.Port, CellToRoute.CellHeader).HeaderOut;
+    NewCell.CellHeader := RouteTable(CellToRoute.Port, CellToRoute.CellHeader).HeaderRecord;
     NewCell.CellBody   := CellToRoute.CellBody;
     return NewCell;
   end route;
 
   ------------------------------------------------------------------------------
   begin
-    for x in 1..NoRoute loop
+    for x in 1..NoRoutes loop
       RouteTable(1,x).OutPort   :=2;
       RouteTable(2,x).OutPort   :=1;
-      RouteTable(1,x).HeaderOut :=random(NoRoutes)+1;
-      RouteTable(2,x).HeaderOut :=random(NoRoutes)+1;
+      RouteTable(1,x).HeaderRecord :=random(NoRoutes)+1;
+      RouteTable(2,x).HeaderRecord :=random(NoRoutes)+1;
     end loop;
 
     accept initialise(x : in integer) do
@@ -61,7 +61,7 @@ package body switch_element is
           my_io.fileInOut.put_str (fd,"       -        ");
           my_io.fileInOut.put_int (fd,RouteTable(x,y).OutPort,2);
           my_io.fileInOut.put_str (fd,"     ");
-          my_io.fileInOut.put_int (fd,RouteTable(x,y).HeaderOut,2);
+          my_io.fileInOut.put_int (fd,RouteTable(x,y).HeaderRecord,2);
           my_io.fileInOut.put_line(fd);
         end loop;
       end loop;
@@ -105,9 +105,9 @@ package body switch_element is
 
       or -- select
 
-        accept CellDeparture(CellReady : in out integer; Port : integer; Cell : in ATMCell) do
+        accept CellDeparture(CellReady : in out integer; Port : integer; Cell : in out ATMCell) do
 
-          BufferOut(Port).RemoveFromBuffer(BufferEmpty.CellOut);
+          BufferOut(Port).RemoveFromBuffer(BufferEmpty,CellOut);
           Cell:= CellOut;
 
           if BufferEmpty=0 then
@@ -134,7 +134,7 @@ package body switch_element is
       when program_error      => my_io.display.Pause("Program Error in ATMElement    ",   24, 1);
       when storage_error      => my_io.display.Pause("Storage Error in ATMElement    ",   24, 1);
       when numeric_error      => my_io.display.Pause("Numeric Error in ATMElement    ",   24, 1);
-      when constraint_error   => my_io.display.Pause("Constraint Error in ATMElement ",   24, 1);
+   --   when constraint_error   => my_io.display.Pause("Constraint Error in ATMElement ",   24, 1);
       when others             => my_io.display.Pause("Other Error in ATMElement      ",   24, 1);
 
 end ATMElement;

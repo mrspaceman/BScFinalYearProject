@@ -1,221 +1,209 @@
-with Ada.Text_IO;    use Ada.Text_IO;
---package Ada.Integer_Text_IO is new Ada.Text_IO.Integer_IO (Integer);
-with Ada.Integer_Text_IO;
---with Ada.tty;
---with Ada.cursor;
+with Ada.Text_IO;          use Ada.Text_IO;
+with Ada.Integer_Text_IO;  use Ada.Integer_Text_IO;
+
 
 package body my_io is
 
-   -- These two variables are used to reset the cursor position
-   -- after displaying the line
-   oldx : row_range := 0;
-   oldy : column_range :=0;
-   dummy: character := ' ';
+    -- These two variables are used to reset the cursor position
+    -- after displaying the line
+    oldx  : Positive_Count := 1;
+    oldy  : Positive_Count := 1;
+    dummy : character := ' ';
 
-   ------------------------------------------------------------------------------
+    ------------------------------------------------------------------------------
 
-   Task body Display is
-      use Ada.Text_IO;
-   begin
-      -- This procedure handles all the messages to the screen;
-      loop
-         select
+    Task body Display is
+    begin
+        -- This procedure handles all the messages to the screen;
+        loop
+            select
 
-            accept CLS do
-               -- Clears the screen
-               tty.clear_screen;
-               oldx := 0;
-               oldy := 0;
-            end CLS;
+                accept CLS do
+                    -- Clears the screen
+                    Ada.Text_IO.Put (ASCII.ESC & "[2J");
+                    oldx := 1;
+                    oldy := 1;
+                end CLS;
 
-         or -- select
+            or -- select
 
-            accept DisplayString(s : in string; x: in row_range; y : in column_range) do
-               -- Displays strings to the screen at the correct location.
-               tty.put(x,y,s,false,false,false,false);
-            end DisplayString;
+                accept DisplayString (s : in string; x : in Positive_Count; y : in Positive_Count) do
+                    -- Displays strings to the screen at the correct location.
+                    Ada.Text_IO.Set_Col (x);
+                    Ada.Text_IO.Set_Line (y);
+                    Ada.Text_IO.Put_Line (s);
+                end DisplayString;
 
-         or -- select
+            or -- select
 
-            accept DisplayChar(c : in character; x: in row_range; y : in column_range) do
-               -- Displays characters to the screen at the correct location.
-               tty.put(x,y,c,false,false,false,false);
-            end DisplayChar;
+                accept DisplayChar (c : in character; x : in Positive_Count; y : in Positive_Count) do
+                    -- Displays characters to the screen at the correct location.
+                    Ada.Text_IO.Set_Col (x);
+                    Ada.Text_IO.Set_Line (y);
+                    Ada.Text_IO.Put (c);
+                end DisplayChar;
 
-         or -- select
+            or -- select
 
-            accept DisplayInt(i,len : in integer; x: in row_range; y : in column_range) do
-               -- Displays integers to the screen at the correct location.
-               cursor.move(x,y,0);
-               int_io.put(i);                          -- i is the number, len is the length - to avoid spurios spaces.
-            end DisplayInt;
+                accept DisplayInt (i, len : in integer; x : in Positive_Count; y : in Positive_Count) do
+                    -- Displays integers to the screen at the correct location.
+                    Ada.Text_IO.Set_Col (x);
+                    Ada.Text_IO.Set_Line (y);
+                    Ada.Integer_Text_IO.Put (i);                          -- i is the number, len is the length - to avoid spurios spaces.
+                end DisplayInt;
 
-         or -- select
+            or -- select
 
-            accept DisplayTime(h,m,s : in integer; x: in row_range; y : in column_range) do
-               -- Displays the time to the screen at the correct location.
-               cursor.get_position(oldx,oldy,0);
-               cursor.move(x,y,0);                     -- Moves the cursor to the correct position that the clock will be displayed.
-
-               if (h<10) then                          -- if the hours are less than ten a zero is put in front of the digit
-                  tty.put("0");                         -- else the hours are displayed as input - needed to achieve the
-                  int_io.put(h,1);                      -- correct format
-               else
-                  int_io.put(h,2);
-               end if;
-
-               text_io.put(":");
-
-               if (m<10) then                          -- if the minutes are less than ten a zero is put in front of the
-                  tty.put("0");                         -- digit else the minutes are displayed as input - needed to achieve the
-                  int_io.put(m,1);                      -- correct format
-               else
-                  int_io.put(m,2);
-               end if;
-
-               text_io.put(":");
-
-               if (m<10) then                          -- if the seconds are less than ten a zero is put in front of the
-                  tty.put("0");                         -- digit else the seconds are displayed as input - needed to achieve the
-                  int_io.put(s,1);                      -- correct format
-               else
-                  int_io.put(s,2);
-               end if;
-
-               cursor.move(oldx,oldy,0);
-
-            end DisplayTime;
-
-         or -- select
-
-            accept Pause(s : in string; x: in row_range; y : in column_range) do
-               tty.put(x,y,s,false,false,false,false);
-               Input.InputChar(dummy,0,0);
-            end Pause;
-
-         or -- select
-
-            terminate;
-
-         end select;
-      end loop;
-
-   exception
-      when tasking_error      => cursor.move(24,1,0);text_io.put("Tasking Error in Display");
-      when program_error      => cursor.move(24,1,0);text_io.put("Program Error in Display");
-      when storage_error      => cursor.move(24,1,0);text_io.put("Storage Error in Display");
-      when numeric_error      => cursor.move(24,1,0);text_io.put("Numeric Error in Display");
-      when constraint_error   => cursor.move(24,1,0);text_io.put("Constraint Error in Display");
-      when others             => cursor.move(24,1,0);text_io.put("Other Error in Display");
-
-   end Display;
-
-   ------------------------------------------------------------------------------
-
-   Task body Input is
-      use text_io;
-      temp : natural;
-   begin
-      -- This procedure handles all the messages to the screen;
-
-      loop
-         select
-
-            accept InputString(s : out string;  x: in row_range; y : in column_range) do
-               -- Inputs strings from the keyboard at the correct screen location.
-               cursor.move(x,y,0);
-               tty.get(s,temp);
-            end InputString;
-
-         or
-
-            accept InputChar(c : in character;x: in row_range; y : in column_range) do
-               -- Inputs characters from the keyboard at the correct screen location.
-               cursor.move(x,y,0);
-               c := tty.get(false,fasle,false);
-            end InputChar;
-
-         or
-
-            accept InputInt(i : in integer;  x: in row_range; y : in column_range) do
-               -- Inputs integers from the keyboard at the correct screen location.
-               cursor.move(x,y,0);
-               tty.get(i,temp);
-            end InputInt;
-
-         or
-
-            terminate;
-
-         end select;
-      end loop;
-
-   exception
-      when tasking_error      => cursor.move(24,1,0);text_io.put("Tasking Error in Input");
-      when program_error      => cursor.move(24,1,0);text_io.put("Program Error in Input");
-      when storage_error      => cursor.move(24,1,0);text_io.put("Storage Error in Input");
-      when numeric_error      => cursor.move(24,1,0);text_io.put("Numeric Error in Input");
-      when constraint_error   => cursor.move(24,1,0);text_io.put("Constraint Error in Input ");
-      when others             => cursor.move(24,1,0);text_io.put("Other Error in Input");
-
-   end Input;
-
-   ------------------------------------------------------------------------------
+                accept DisplayTime (h, m, s : in integer; x : in Positive_Count; y : in Positive_Count) do
+                    -- Displays the time to the screen at the correct location.
+                    oldx := Ada.Text_IO.Col;
+                    oldy := Ada.Text_IO.Line;
+                    Ada.Text_IO.Set_Col (x);                  -- Moves the cursor to the correct position that the clock will be displayed.
+                    Ada.Text_IO.Set_Line (y);
 
 
-   ------------------------------------------------------------------------------
+                    if (h < 10) then                          -- if the hours are less than ten a zero is put in front of the digit
+                        Ada.Text_IO.Put ("0");                         -- else the hours are displayed as input - needed to achieve the
+                        Ada.Integer_Text_IO.Put (h);                      -- correct format
+                    else
+                        Ada.Integer_Text_IO.Put (h);
+                    end if;
 
-   Task body FileInOut is
-   begin
-      loop
-         select
+                    Ada.Text_IO.Put (":");
 
-            accept Create(file : in out text_io.file_type; s : in string) do
-               text_io.create(Mode => Rewrite);
-            end Create;
+                    if (m < 10) then                          -- if the minutes are less than ten a zero is put in front of the
+                        Ada.Text_IO.Put ("0");                         -- digit else the minutes are displayed as input - needed to achieve the
+                        Ada.Integer_Text_IO.Put (m);                      -- correct format
+                    else
+                        Ada.Integer_Text_IO.Put (m);
+                    end if;
 
-         or
+                    Ada.Text_IO.Put (":");
 
-            accept Put_Str(file : in text_io.file_type; s : in string) do
-               text_io.put(FILE=>file, ITEM=>s);
-            end Put_Str;
+                    if (m < 10) then                          -- if the seconds are less than ten a zero is put in front of the
+                        Ada.Text_IO.Put ("0");                         -- digit else the seconds are displayed as input - needed to achieve the
+                        Ada.Integer_Text_IO.Put (s);                      -- correct format
+                    else
+                        Ada.Integer_Text_IO.Put (s);
+                    end if;
 
-         or
+                    Ada.Text_IO.Set_Col (x);
+                    Ada.Text_IO.Set_Line (y);
 
-            accept Put_Int(file : in text_io.file_type; i : in integer) do
-               text_io.put(FILE=>file, ITEM=>i, WIDTH=>len);
-            end Put_Int;
+                end DisplayTime;
 
-         or
+            or -- select
 
-            accept Put_Line(file : in text_io.file_type) do
-               text_io.New_Line(FILE=>file);
-            end Put_Line;
+                accept Pause (s : in string; x : in Positive_Count; y : in Positive_Count) do
+                    Ada.Text_IO.Set_Col (x);
+                    Ada.Text_IO.Set_Line (y);
+                    Ada.Text_IO.Put ( s);
+                    Ada.Text_IO.Get (dummy);
+                end Pause;
 
-         or
+            or -- select
 
-            accept Close(file : in out text_io.file_type) do
-               text_io.close(FILE=>file);
-            end Close;
+                terminate;
 
-         or
+            end select;
+        end loop;
 
-            terminate;
+    exception
+        when tasking_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put("Tasking Error in Display");
+        when program_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Program Error in Display");
+        when storage_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Storage Error in Display");
+        when numeric_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Numeric Error in Display");
+    --    when constraint_error   => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Constraint Error in Display");
+        when others             => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Other Error in Display");
 
-         end select;
-      end loop;
+    end Display;
+
+    ------------------------------------------------------------------------------
+
+    Task body Input is
+    begin
+        -- This procedure handles all the messages to the screen;
+
+        loop
+            select
+
+                accept InputString (s : out string;  x : in Positive_Count; y : in Positive_Count) do
+                    -- Inputs strings from the keyboard at the correct screen location.
+                    Ada.Text_IO.Set_Col (x);
+                    Ada.Text_IO.Set_Line (y);
+                    Ada.Text_IO.get (s);
+                end InputString;
+
+            or
+
+                terminate;
+
+            end select;
+        end loop;
+
+    exception
+        when tasking_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Tasking Error in Input");
+        when program_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Program Error in Input");
+        when storage_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Storage Error in Input");
+        when numeric_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Numeric Error in Input");
+  --      when constraint_error   => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Constraint Error in Input ");
+        when others             => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Other Error in Input");
+
+    end Input;
+
+-------------------------------------------------------------------------------
+
+    Task body FileInOut is
+    begin
+        loop
+            select
+
+                accept Create (file : in out File_Type ; s : in string) do
+                    Ada.Text_IO.create (file, Out_File, s);
+                end Create;
+
+            or
+
+                accept Put_Str (file : in File_Type; s : in string) do
+                    Ada.Text_IO.put (file,  s);
+                end Put_Str;
+
+            or
+
+                accept Put_Int (file : in File_Type; i,len : in integer) do
+                    Ada.Text_IO.put (file,  Integer'Image(i));
+                end Put_Int;
+
+            or
+
+                accept Put_Line (file : in File_Type) do
+                    Ada.Text_IO.New_Line ( file);
+                end Put_Line;
+
+            or
+
+                accept Close (file : in out File_Type) do
+                    Ada.Text_IO.close ( file);
+                end Close;
+
+            or
+
+                terminate;
+
+            end select;
+        end loop;
 
 
-   exception
-      when tasking_error      => cursor.move(24,1,0);text_io.put("Tasking Error in FileInOut");
-      when program_error      => cursor.move(24,1,0);text_io.put("Program Error in FileInOut");
-      when storage_error      => cursor.move(24,1,0);text_io.put("Storage Error in FileInOut");
-      when numeric_error      => cursor.move(24,1,0);text_io.put("Numeric Error in FileInOut");
-      when constraint_error   => cursor.move(24,1,0);text_io.put("Constraint Error in FileInOut");
-      when others             => cursor.move(24,1,0);text_io.put("Other Error in FileInOut");
+    exception
+        when tasking_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Tasking Error in FileInOut");
+        when program_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Program Error in FileInOut");
+        when storage_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Storage Error in FileInOut");
+        when numeric_error      => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Numeric Error in FileInOut");
+    --    when constraint_error   => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Constraint Error in FileInOut");
+        when others             => Ada.Text_IO.Set_Col (24);Ada.Text_IO.Set_Line (1); Ada.Text_IO.Put ("Other Error in FileInOut");
 
-   end FileInOut;
+    end FileInOut;
 
-   ------------------------------------------------------------------------------
+    ------------------------------------------------------------------------------
 
-   end my_io;
+end my_io;

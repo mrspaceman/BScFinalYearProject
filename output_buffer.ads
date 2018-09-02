@@ -1,4 +1,4 @@
-with ATMTypes:       use ATMTypes;
+with ATMTypes;       use ATMTypes;
 
 package Output_Buffer is
 
@@ -7,6 +7,6 @@ package Output_Buffer is
     entry AddToBuffer(CellToAdd : in ATMCell);
     entry RemoveFromBuffer(BufferEmpty: in out integer; CellToRemove: out ATMCell);
     entry CountCells(NoOfCells: out INTEGER);
-  end ATMElement;
+  end ATMBuffer;
 
 end Output_Buffer;

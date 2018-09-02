@@ -2,6 +2,7 @@ with ATMTypes;       use ATMTypes;
 with switch_element; use switch_element;
 with my_io;          use my_io;
 with sim_bits;       use sim_bits;
+with Ada.Text_IO;    use Ada.Text_IO;
 
 Procedure Simulate is
     NetworkNodes    : array (1 .. MaxNumberOfNodes) of ATMElement;
@@ -15,9 +16,11 @@ Procedure Simulate is
     ------------------------------------------------------------------------------
 
     Procedure setup_screen is
+        column : Positive_Count;
     Begin
         my_io.display.cls;
-        my_io.display.displayString (Title, 1, 40-(Title'LENGTH / 2));  -- Centres Title on Screen
+        column := (40 - (Title'LENGTH / 2));
+        my_io.display.displayString (Title, 1, column);  -- Centres Title on Screen
         my_io.display.displayString (Author, 1, (79 - Author'LENGTH)); -- Right Justifies Author on screen
         my_io.display.displayString ("Cycle Number", 5, 10);
 

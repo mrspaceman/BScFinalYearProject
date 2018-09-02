@@ -3,7 +3,7 @@ project ATM_Swtich_Simulator is
    for Source_Dirs use ("./**");
    for Object_Dir use "../atm_switch_build";
    for Main use ("simulate.adb");
-   for Source_Files use ("atmtypes.ads", "buffer.adb", "buffer.ads", "my_io.adb", "my_io.ads", "simulate.adb", "sim_bits.adb", "sim_bits.ads", "simulate.adb", "switch_element.adb", "switch_element.ads");
+   for Source_Files use ("atmtypes.ads", "my_io.adb", "my_io.ads", "output_buffer.adb", "output_buffer.ads", "sim_bits.adb", "sim_bits.ads", "simulate.adb", "simulate.adb", "switch_element.adb", "switch_element.ads");
 
    package Ide is
       for Vcs_Kind use "Git";
@@ -26,3 +26,4 @@ project ATM_Swtich_Simulator is
    end Linker;
 
 end ATM_Swtich_Simulator;
+
