@@ -8,7 +8,7 @@ package body my_io is
     -- after displaying the line
     oldCol  : Positive_Count := 1;
     oldRow  : Positive_Count := 1;
-    dummy : character := ' ';
+    dummy   : character := ' ';
 
     ------------------------------------------------------------------------------
 
@@ -24,6 +24,13 @@ package body my_io is
                     oldCol := 1;
                     oldRow := 1;
                 end CLS;
+
+            or -- select
+
+                accept DisplayLogMsg (s : in string) do
+                    --  Ada.Text_IO.Put_Line ("Debug : " & s);
+                    Ada.Text_IO.Put ("");
+                end DisplayLogMsg;
 
             or -- select
 
@@ -160,34 +167,36 @@ package body my_io is
             select
 
                 accept Create (file : in out File_Type ; s : in string) do
-                    Ada.Text_IO.create (file, Out_File, s);
-                    Create(File => file,
-          Mode => Out_File,
-          Name => s);
+                    Ada.Text_IO.Create(File => file,
+                                       Mode => Out_File,
+                                       Name => s);
                 end Create;
 
             or
 
                 accept Put_Str (file : in File_Type; s : in string) do
-                    Ada.Text_IO.put (file,  s);
+                    Ada.Text_IO.put (File => file, Item => s);
+                    Ada.Text_IO.Flush;
                 end Put_Str;
 
             or
 
                 accept Put_Int (file : in File_Type; i,len : in integer) do
-                    Ada.Text_IO.put (file,  Integer'Image(i));
+                    Ada.Text_IO.put (File => file,  Item => Integer'Image(i));
                 end Put_Int;
 
             or
 
                 accept Put_Line (file : in File_Type) do
-                    Ada.Text_IO.New_Line ( file);
+                    Ada.Text_IO.New_Line (File => file);
+                    Ada.Text_IO.Flush;
                 end Put_Line;
 
             or
 
                 accept Close (file : in out File_Type) do
-                    Ada.Text_IO.close ( file);
+                    Ada.Text_IO.Flush;
+                    Ada.Text_IO.close (File => file);
                 end Close;
 
             or

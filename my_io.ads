@@ -8,6 +8,7 @@ package my_io is
 
     Task Display is
         entry CLS;
+        entry DisplayLogMsg (s       : in string);
         entry DisplayString (s       : in string;   row : in Positive_Count; col : in Positive_Count);
         entry DisplayChar   (c       : in character;row : in Positive_Count; col : in Positive_Count);
         entry DisplayInt    (i, len  : in integer;  row : in Positive_Count; col : in Positive_Count);

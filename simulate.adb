@@ -20,7 +20,7 @@ Procedure Simulate is
     Begin
         my_io.display.cls;
         column := (40 - (Title'LENGTH / 2));
-        my_io.display.displayString (Title, 1, column);  -- Centres Title on Screen
+        display.displayString (Title, 1, column);  -- Centres Title on Screen
         column := (79 - Author'LENGTH);
         my_io.display.displayString (Author, 2, column); -- Right Justifies Author on screen
         my_io.display.displayString ("Cycle Number", 4, 10);
@@ -28,6 +28,7 @@ Procedure Simulate is
 
     Procedure setup_file is
     Begin
+        display.DisplayLogMsg("setup_file()" );
         my_io.fileInOut.create  (fd, datafilename);
         my_io.fileInOut.put_str (fd, Title);
         my_io.fileInOut.put_str (fd, "    Version:");
@@ -55,7 +56,9 @@ Procedure Simulate is
         my_io.fileInOut.put_str (fd, "From Switch, Port    to Switch, Port");
 
         for x in 1 .. MaxNumberOfNodes loop
+            display.DisplayLogMsg ("setup_file() loop x=" & Integer'Image(x) );
             for y in 1 .. NoOfPorts loop
+                display.DisplayLogMsg ("setup_file() loop y=" & Integer'Image(y) );
                 my_io.fileInOut.put_line (fd);
                 my_io.fileInOut.put_str (fd, "   ");
                 my_io.fileInOut.put_int (fd, x, 2);
@@ -71,14 +74,21 @@ Procedure Simulate is
         my_io.fileInOut.put_line (fd);
         my_io.fileInOut.put_line (fd);
         my_io.fileInOut.put_line (fd);
+
         for x in 1 .. MaxNumberOfNodes loop
-            NetworkNodes (nodeNumber).Initialise (nodeNumber);
+            display.DisplayLogMsg ("setup_file() initialising node " & Integer'Image (x) );
+            NetworkNodes(x).Initialise (x);
         end loop;
-        my_io.fileInOut.put_line (fd); my_io.fileInOut.put_line (fd);
+
+        my_io.fileInOut.put_line (fd);
+        my_io.fileInOut.put_line (fd);
 
         my_io.fileInOut.put_str (fd, " Cycle No    Switch No    InPort    Cell Header    Outport    Cell Header    No. Cells");
         my_io.fileInOut.put_line (fd);
         my_io.fileInOut.put_str (fd, "                                        In                    After Route    In Buffer");
+
+
+        display.DisplayLogMsg ("setup_file() end" );
     End setup_file;
 
     Function GenerateNewCell (port : INTEGER) return ATMCell is

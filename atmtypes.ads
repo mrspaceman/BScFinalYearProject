@@ -36,7 +36,7 @@ package ATMtypes is
 ------------------------------------------------------------------------------
 
   Author            : constant STRING := "A.R.Clark";
-  Version           : constant STRING := "0.1";
+  Version           : constant STRING := "0.2";
   Title             : constant STRING := "ATM Switch Element Simulator";
   DataFileName      : constant STRING := "s01.dat";
   MaxNumberOfNodes  : constant INTEGER :=  5;   -- number of switches in network
